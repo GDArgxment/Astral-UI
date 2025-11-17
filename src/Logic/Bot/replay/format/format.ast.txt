@@ -1,0 +1,72 @@
+// The bot will only record the numbers, but im adding stuff to explain the numbers. IDK if we should use the bool method or smt? is 1,0,0,0 better than 2,0,0,0?
+// Ill try to put the right C++ vars in here.
+
+// Macro Header. This shows the data for the bot to read what the macro actually says
+
+std::String MacroName: ExampleMacro1
+std::String Author: GWDdoS
+Float TPSStart: 240 //TPS at the start of the macro
+Int Seed: 1 //Seed at the start of the level
+Float GameVersion: 2.207 // Doesnt matter that m
+Bool RecordDeaths: 0 // 0 Is flase IIRC
+Bool IsTwoPlayer: 1 // 1 Is true IIRC
+Bool IsPlatformer: 0 // False
+Bool AutoRecordInputs: 0 // False. This is the default if the player doesnt want to record custom input types. Will make the recorded inputs match what the level is. (1Player, 2Player, Plat etc)
+Bool RecordCustomInputSelectionEnabled: 1 // true as im in a normal level and only am using W A and D
+Int RecordedCustomInputSelection: 111000 // This will show what the macro records, allowing the option to record only certain keys. The total # of keys is 6, being W,A,D,Up,Left,Right. (Note, no down or S). The number 111000 stands for only W,A,D.
+Int MacroTypeVersion: 1
+
+// where the inputs will actually go. Spacing just for readability
+Frame   FloatKey   BoolHold
+1       100000     100000
+// frame one, key 1(W) clicks and holds
+2       010000     010000
+// frame two, key 2(A) starts and key 1 ends
+3       110000     000000
+// frame three, key 1 and 2 start and dont hold
+4 TPSChange:360
+// might need to be different to show the bot that only the number there is the tps and not a frame for an input
+4 SeedChange
+// This will also have to be changed
+5 RecordedDeath
+Frame: 4 // so the player dies on frame X(this case frame 4) and the bot knows to key playing after. This will reset the frame count but it shouldnt matter. Note the reset in frames, but different inputs
+Frame   FloatKey   BoolHold FrameEnd ClickMultipler
+1       001000     001000           0,0,10,0,0,0// making this only a certain key IS VERY IMPORTANT hence the need for smt besides a number here to prevent float overlfow.
+2       010000     010000           // the code above will make the input happen 10 times in 1 frame
+3       111000     111000
+LoopFramesAfter:1000{ // replaces the old, loop 1 frame X times, with the better loop X, Y times
+4 111000 111000}
+LoopFramesAfter for 100:          // repeats a set structure of inputs (so multiple times of inputs) for X(In this case 100, or 200 frames) frames. Here its a simple hold 1 frame wait 1 frame Hold again.
+1005    111000     111000
+1006    000000     000000
+// I want to make a program that will automatically detect repeates like this and merge them to be like the thing above, or detects repeats in inputs per frame and merges it into the structure above on like 36 and 64.
+
+Final Example // what the macro will actually be in the txt (uncompressed)
+ExampleMacro1
+GWDdoS
+240
+1
+2.207
+0
+1
+0
+0
+1
+111000
+1
+1 100000 100000
+2 010000 010000
+3 110000 000000
+4 Tps:360
+4 Seed:5
+5 Death
+1 001000 001000 0,0,10,0,0,0
+2 010000 010000
+3 111000 111000
+LoopFramesAfter:1000{
+4 111000 111000}
+LoopFramesAfter:100{
+1005 111000 111000
+1006 000000 000000}
+
+// the macro will end on frame 1106, where the last input would be recorded on 1106.
