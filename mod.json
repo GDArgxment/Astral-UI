@@ -1,0 +1,51 @@
+{
+	"geode": "4.9.0",
+	"gd": {
+		"win": "2.2074",
+		"mac": "2.2074",
+		"android": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "astralteam.astral",
+	"name": "Astral",
+	"version": "1.0.0-beta.1",
+	"developers": ["Astral Team", "GWDdoS", "Argxment", "LoliGD", "slideglide"],
+	"description": "Astral: A multi-platform bot made for botting hard GD levels such as the ILL and the SLL.",
+	"resources": {
+		"files": [
+			"resources/*.ttf",
+			"resources/boykisser.png"
+		]
+	},
+	"links": {
+		"source": "https://discord.gg/2FrsXSMSE7",
+		"community": "https://discord.gg/2FrsXSMSE7"
+	},
+	"tags": ["gameplay", "utility", "cheat"],
+	"settings": {
+		"ffmpeg-path": {
+			"type": "file",
+			"name": "FFmpeg Path",
+			"description": "The path of the FFmpeg executable (ffmpeg.exe), required for renderer",
+			"platforms": ["win"],
+			"default": {
+				"win": "{gd_dir}/astral/ffmpeg/ffmpeg.exe"
+			},
+			"control": {
+				"dialog": "open",
+				"filters": [
+					{
+						"files": ["*.exe"],
+						"description": "ffmpeg.exe"
+					}
+				]
+			}
+		}
+	},
+	"dependencies": {
+        "geode.node-ids": {
+            "version": ">=v1.21.1",
+            "importance": "required"
+        }
+	}
+}
