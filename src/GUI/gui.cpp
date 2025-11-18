@@ -13,7 +13,6 @@ using namespace geode::prelude;
 //using namespace Astral::Hacks;
 //using namespace Astral::QOL;
 //using namespace Astral::Cosmetics;
-using namespace Astral::Hacks::AutoClicker;
 
 bool recording = false;
 bool replaying = false;
@@ -235,8 +234,7 @@ void SetupKeybinds() {
         "Toggle Noclip",
         []() { 
             noclipEnabled = !noclipEnabled;
-            Astral::Hacks::Noclip::setNoclipEnabled(noclipEnabled);
-            saveHackData();
+            
             AstralLogger::log("Noclip toggled: {}", noclipEnabled);
         },
         cocos2d::enumKeyCodes::KEY_N
@@ -428,11 +426,8 @@ void renderBottingTab()
             isRecording = !isRecording;
             if (isRecording) {
                 isPlayingMacro = false;
-                Astral::Bot::Recording::StartRecording(selectedMacroName);
                 AstralLogger::log("Recording started: {}", selectedMacroName);
             } else {
-                Astral::Bot::Recording::StopRecording();
-                Astral::Bot::Recording::SaveMacro();
                 needsRefresh = true;
                 AstralLogger::log("Macro saved: {}", selectedMacroName);
             }
@@ -456,11 +451,8 @@ void renderBottingTab()
             isPlayingMacro = !isPlayingMacro;
             if (isPlayingMacro) {
                 isRecording = false;
-                Astral::Bot::Recording::LoadMacro(selectedMacroName);
-                Astral::Bot::Recording::Playback();
                 AstralLogger::log("Playing macro: {}", selectedMacroName);
             } else {
-                Astral::Bot::Recording::StopPlayback();
                 AstralLogger::log("Stopped playback");
             }
         } else {
@@ -491,16 +483,14 @@ void renderBottingTab()
         if (tpsValue < 0.0f) {
             tpsValue = 240.f;
         }
-        Astral::Hacks::TPSBypass::setTPS(tpsValue);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     ImGui::Text("Speedhack:");
     ImGui::SameLine();
     ImGui::AlignTextToFramePadding();
     if (ImGui::Checkbox("##Speedhack:", &speedhackEnabled)) {
-        Astral::Hacks::Speedhack::setSpeedhackEnabled(speedhackEnabled);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     ImGui::SetNextItemWidth(50);  // Small width for multiplier
@@ -509,22 +499,19 @@ void renderBottingTab()
         if (speedhackMultiplier <= 0.f) {
             speedhackMultiplier = 1.0f;
         }
-        saveHackData();
-        Astral::Hacks::Speedhack::setSpeedhackMultiplier(speedhackMultiplier);
+        
     }
     ImGui::SameLine();
     ImGui::Text("Seed Hack:");
     ImGui::SameLine();
     if (ImGui::Checkbox("##SeedHack", &seedHackEnabled)) {
-        Astral::Hacks::Seedhack::setEnabled(seedHackEnabled);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     ImGui::SetNextItemWidth(50);
     if (ImGui::DragInt("##Seed", &seedValue, 1.0f)) {
         AstralLogger::log("Seed Value set to: {}", seedValue);
-        Astral::Hacks::Seedhack::setSeedValue(seedValue);
-        saveHackData();
+        
     }
     ImGui::Separator();
     ImGui::BeginDisabled();
@@ -534,8 +521,7 @@ void renderBottingTab()
     ImGui::EndDisabled();
     ImGui::SameLine();
     if (ImGui::Checkbox("Noclip", &noclipEnabled)) {
-        Astral::Hacks::Noclip::setNoclipEnabled(noclipEnabled);
-        saveHackData();
+        
     }
     
     ImGui::SameLine();
@@ -544,40 +530,33 @@ void renderBottingTab()
     }
     if (ImGui::BeginPopup("NoclipPlayersPopup")) {
         if (ImGui::Checkbox("Player 1", &noclipP1)) {
-            Astral::Hacks::Noclip::setNoclipP1(noclipP1);
-            saveHackData();
+            
         }
         if (ImGui::Checkbox("Player 2", &noclipP2)) {
-            Astral::Hacks::Noclip::setNoclipP2(noclipP2);
-            saveHackData();
+            
         }
         ImGui::EndPopup();
     }
     
     ImGui::Separator();
     static bool framestepEnabled = false;
-    framestepEnabled = Astral::Hacks::FrameStepper::isEnabled();
+    // framestepEnabled = Astral::Hacks::FrameStepper::isEnabled();
     if (ImGui::Checkbox("Frame Stepper", &framestepEnabled)) {
-        Astral::Hacks::FrameStepper::setEnabled(framestepEnabled);
     }
     ImGui::SameLine();
     if (ImGui::Button("Step")) {
-        Astral::Hacks::FrameStepper::stepFrame();
     }
     ImGui::SameLine();
     if (ImGui::Button("Back Step")) {
-        Astral::Hacks::FrameStepper::stepBack();
     }
     ImGui::Separator();
     if (ImGui::Checkbox("Show Layout", &layoutEnabled)) {
-        Astral::Hacks::LayoutMode::setEnabled(layoutEnabled);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     // Main hitbox toggle
     if (ImGui::Checkbox("Show Hitboxes", &showHitboxes)) {
-        Astral::Hacks::Hitboxes::setEnabled(showHitboxes);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     if (ImGui::Button("⚙")) { // ⚙ for gear icon
@@ -589,39 +568,32 @@ void renderBottingTab()
         ImGui::Separator();
         
         if (ImGui::Checkbox("Show Trail##hitbox", &showHitboxTrail)) {
-            Astral::Hacks::Hitboxes::setShowTrail(showHitboxTrail);
-            saveHackData();
+            
         }
         
         ImGui::SetNextItemWidth(150);
         if (ImGui::SliderInt("Trail Length", &trailLength, 1, 2000)) {
-            Astral::Hacks::Hitboxes::setTrailLength(trailLength);
-            saveHackData();
+            
         }
         
         ImGui::Separator();
         
         if (ImGui::Checkbox("Rotated Hitbox", &showRotated)) {
-            Astral::Hacks::Hitboxes::setShowRotated(showRotated);
-            saveHackData();
+            
         }
         
         if (ImGui::Checkbox("Inner Hitbox", &showInner)) {
-            Astral::Hacks::Hitboxes::setShowInner(showInner);
-            saveHackData();
+            
         }
         
         if (ImGui::Checkbox("Circle Hitbox", &showCircle)) {
-            Astral::Hacks::Hitboxes::setShowCircle(showCircle);
-            saveHackData();
+            
         }
         
         if (ImGui::Checkbox("Fill", &showFill)) {
-            Astral::Hacks::Hitboxes::setShowFill(showFill);
-            saveHackData();
+            
         }
         if (ImGui::SliderFloat("Hitbox Thickness", &hitboxThickness, 0.1f, 2.0f, "%.2f")) {
-            Astral::Hacks::Hitboxes::setHitboxThickness(hitboxThickness);
         }
         ImGui::EndPopup();
     }
@@ -639,39 +611,33 @@ void renderHacksTab()
         } else if (respawnDelay > 2.f){
             respawnDelay = 1.f;
         }
-        saveHackData();
-        Astral::QOL::RespawnDelay::setDelay(respawnDelay);
+        
     }
     ImGui::SameLine();
     if (ImGui::Checkbox("Safe Mode", &safeMode)) {
-        Astral::QOL::SafeMode::setEnabled(safeMode);
-        saveHackData();
+        
     }
     
     ImGui::Separator();
     
     // Death & Respawn Effects
     if (ImGui::Checkbox("No Death Effect", &noDeathEffect)) {
-        Astral::Cosmetics::NoDeathEffect::setEnabled(noDeathEffect);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     if (ImGui::Checkbox("No Respawn Flash", &noRespawnFlash)) {
-        Astral::Cosmetics::NoRespawnFlash::setEnabled(noRespawnFlash);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     if (ImGui::Checkbox("No Ghost Trail", &ghostTrail)) {
-        Astral::Cosmetics::NoGhostTrail::setEnabled(ghostTrail);
-        saveHackData();
+        
     }
     
     ImGui::Separator();
     
     // Orb Effects
     if (ImGui::Checkbox("No Orb Effects", &noOrbEffectEnabled)) {
-        Astral::Cosmetics::NoOrbEffects::setEnabled(noOrbEffectEnabled);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     if (ImGui::Button("⚙")) {
@@ -680,16 +646,13 @@ void renderHacksTab()
     
     if (ImGui::BeginPopup("OrbEffectsPopup")) {
         if (ImGui::Checkbox("No Orb Ring", &noOrbRing)) {
-            Astral::Cosmetics::NoOrbEffects::setNoOrbRing(noOrbRing);
-            saveHackData();
+            
         }
         if (ImGui::Checkbox("No Orb Hit Effect", &noOrbHitEffect)) {
-            Astral::Cosmetics::NoOrbEffects::setNoOrbHitEffect(noOrbHitEffect);
-            saveHackData();
+            
         }
         if (ImGui::Checkbox("No Dash Boom", &noDashBoom)) {
-            Astral::Cosmetics::NoOrbEffects::setNoDashBoom(noDashBoom);
-            saveHackData();
+            
         }
         ImGui::EndPopup();
     }
@@ -698,34 +661,29 @@ void renderHacksTab()
     
     // Dash & Visual Effects
     if (ImGui::Checkbox("No Dash Fire", &noDashFire)) {
-        Astral::Cosmetics::NoDashFire::setEnabled(noDashFire);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     if (ImGui::Checkbox("No Shaders", &noShaders)) {
-        Astral::Cosmetics::NoShaders::setEnabled(noShaders);
-        saveHackData();
+        
     }
     
     ImGui::Separator();
     
     // Mirror Options
     if (ImGui::Checkbox("No Mirror", &noMirror)) {
-        Astral::Cosmetics::NoMirror::setEnabled(noMirror);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     if (ImGui::Checkbox("Instant Mirror", &instantMirror)) {
-        Astral::Cosmetics::InstantMirror::setEnabled(instantMirror);
-        saveHackData();
+        
     }
     
     ImGui::Separator();
     
     // Wave Options
     if (ImGui::Checkbox("Keep Wave On", &keepWaveEnabled)) {
-        Astral::Cosmetics::KeepWave::setEnabled(keepWaveEnabled);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     if (ImGui::Button("⚙##wave")) {
@@ -733,25 +691,21 @@ void renderHacksTab()
     }
     ImGui::SameLine();
     if (ImGui::Checkbox("Wave Trail Drag Fix", &waveTrailDragFix)) {
-        Astral::Cosmetics::WaveDragFix::setEnabled(waveTrailDragFix);
-        saveHackData();
+        
     }
     
     if (ImGui::BeginPopup("KeepWaveModesPopup")) {
         if (ImGui::Checkbox("NoFade", &noFade)) {
-            Astral::Cosmetics::KeepWave::setNoFadeOut(noFade);
-            saveHackData();
+            
         }
         if (ImGui::Checkbox("NoReset", &noReset)) {
-            Astral::Cosmetics::KeepWave::setNoReset(noReset);
-            saveHackData();
+            
         }
         ImGui::EndPopup();
     }
     ImGui::SameLine();
     if (ImGui::Checkbox("No Wave Trail", &noTrail)) {
-        Astral::Cosmetics::NoTrail::setEnabled(noTrail);
-        saveHackData();
+        
     }
     
     ImGui::Separator();
@@ -759,15 +713,13 @@ void renderHacksTab()
     // Quality of Life
     static bool unlockEverythingEnabled = false;
     if (ImGui::Checkbox("Unlock Everything", &unlockEverythingEnabled)) {
-        Astral::Cosmetics::UnlockEverything::setEnabled(unlockEverythingEnabled);
-        saveHackData();
+        
     }
     
     ImGui::Separator();
     
     if (ImGui::Checkbox("Accurate Percentage", &accuratePercentage)) {
-        Astral::QOL::AccuratePercentage::setEnabled(accuratePercentage);
-        saveHackData();
+        
     }
     ImGui::SameLine();
     ImGui::Text("Decimals:");
@@ -779,8 +731,7 @@ void renderHacksTab()
         } else if (decimalPlaces > 20){
             decimalPlaces = 1;
         }
-        saveHackData();
-        Astral::QOL::AccuratePercentage::setDecimalPlaces(decimalPlaces);
+        
     }
 }
 
